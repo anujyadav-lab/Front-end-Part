@@ -1,6 +1,6 @@
 // src/components/CombinedData.js
 import React, { useState, useEffect } from 'react';
-import { getCombinedData } from '../api';
+// import { getCombinedData } from '../api';
 
 const CombinedData = () => {
   const [data, setData] = useState(null);
@@ -8,7 +8,7 @@ const CombinedData = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchCombinedData();
+    // fetchCombinedData();
   }, []);
 
   const fetchCombinedData = async () => {

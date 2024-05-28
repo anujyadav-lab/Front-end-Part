@@ -14,11 +14,14 @@ const Charts = () => {
     fetchPieChartData();
   }, [month]);
 
+
   const fetchBarChartData = async () => {
+    
     try {
       setLoading(true);
       const response = await axios.get(`http://localhost:5000/api/bar-chart?month=${month}`);
       setBarChartData(response.data);
+      console.log(response.data)
     } catch (error) {
       console.error('Error fetching bar chart data:', error);
       setError('Error fetching bar chart data');

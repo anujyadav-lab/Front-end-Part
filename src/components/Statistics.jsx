@@ -4,15 +4,24 @@ import { getStatistics } from '../api';
 
 const Statistics = () => {
   const [statistics, setStatistics] = useState(null);
-  console.log(statistics)
-  const [month, setMonth] = useState('March');
+  const [month, setMonth] = useState(3); // Default to March (key: 3)
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
-  ];
+  const months = {
+    1: 'January', 
+    2: 'February', 
+    3: 'March', 
+    4: 'April', 
+    5: 'May', 
+    6: 'June',
+    7: 'July', 
+    8: 'August', 
+    9: 'September', 
+    10: 'October', 
+    11: 'November', 
+    12: 'December',
+  };
 
   useEffect(() => {
     fetchStatistics();
@@ -23,7 +32,6 @@ const Statistics = () => {
     setError(null);
     try {
       const response = await getStatistics({ month });
-      console.log('here is response:',response)
       setStatistics(response.data);
     } catch (error) {
       setError('Error fetching statistics');
@@ -34,7 +42,7 @@ const Statistics = () => {
   };
 
   const handleMonthChange = (e) => {
-    setMonth(e.target.value);
+    setMonth(parseInt(e.target.value)); // Convert value to integer
   };
 
   return (
@@ -44,9 +52,9 @@ const Statistics = () => {
         <label>
           Select Month:
           <select value={month} onChange={handleMonthChange}>
-            {months.map((month) => (
-              <option key={month} value={month}>
-                {month}
+            {Object.entries(months).map(([key, monthName]) => (
+              <option key={key} value={key}>
+                {monthName}
               </option>
             ))}
           </select>
