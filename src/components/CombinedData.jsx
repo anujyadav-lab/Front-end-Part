@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 // import { getCombinedData } from '../api';
 
-const CombinedData = () => {
+const CombinedData = ({month}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

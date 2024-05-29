@@ -2,19 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { getTransactions } from '../api';
 
-const Transactions = () => {
+const Transactions = ({month}) => {
   const [transactions, setTransactions] = useState([]);
-  const [month, setMonth] = useState('March');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
-  ];
+ 
 
   useEffect(() => {
     fetchTransactions();
@@ -35,10 +31,7 @@ const Transactions = () => {
     }
   };
 
-  const handleMonthChange = (e) => {
-    setMonth(e.target.value);
-    setPage(1); // Reset to first page on month change
-  };
+
 
   const handleSearchChange = (e) => {
     setSearch(e.target.value);
@@ -61,16 +54,7 @@ const Transactions = () => {
     <div>
       <h1>Transactions</h1>
       <div>
-        <label>
-          Select Month:
-          <select value={month} onChange={handleMonthChange}>
-            {months.map((month) => (
-              <option key={month} value={month}>
-                {month}
-              </option>
-            ))}
-          </select>
-        </label>
+        
         <input
           type="text"
           placeholder="Search transactions"

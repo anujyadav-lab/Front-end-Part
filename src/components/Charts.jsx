@@ -1,27 +1,26 @@
-// src/components/Charts.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { Chart, BarController, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
 
-const Charts = () => {
+// Register Chart.js components
+Chart.register(BarController, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
+
+const Charts = ({ month }) => {
   const [barChartData, setBarChartData] = useState([]);
-  const [pieChartData, setPieChartData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [month, setMonth] = useState('2023-03'); // default month
+  const chartContainer = useRef(null);
+  const chartInstanceRef = useRef(null);
 
   useEffect(() => {
     fetchBarChartData();
-    fetchPieChartData();
   }, [month]);
 
-
   const fetchBarChartData = async () => {
-    
     try {
       setLoading(true);
       const response = await axios.get(`http://localhost:5000/api/bar-chart?month=${month}`);
       setBarChartData(response.data);
-      console.log(response.data)
     } catch (error) {
       console.error('Error fetching bar chart data:', error);
       setError('Error fetching bar chart data');
@@ -30,25 +29,70 @@ const Charts = () => {
     }
   };
 
-  const fetchPieChartData = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`http://localhost:5000/api/pie-chart?month=${month}`);
-      setPieChartData(response.data);
-    } catch (error) {
-      console.error('Error fetching pie chart data:', error);
-      setError('Error fetching pie chart data');
-    } finally {
-      setLoading(false);
+  useEffect(() => {
+    if (chartContainer.current) {
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+      }
+      const newChartInstance = renderChart();
+      chartInstanceRef.current = newChartInstance;
     }
+  }, [barChartData]);
+
+  const renderChart = () => {
+    const labels = barChartData.map(item => item.priceRange);
+    const data = barChartData.map(item => item.count);
+
+    const chartData = {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Number of Items',
+          backgroundColor: 'rgba(75,192,192,1)',
+          borderColor: 'rgba(0,0,0,1)',
+          borderWidth: 1,
+          hoverBackgroundColor: 'rgba(75,192,192,0.4)',
+          hoverBorderColor: 'rgba(0,0,0,1)',
+          data: data,
+        },
+      ],
+    };
+
+    const options = {
+      scales: {
+        x: {
+          type: 'category',
+          labels: labels,
+        },
+        y: {
+          beginAtZero: true,
+        },
+      },
+    };
+
+    const ctx = chartContainer.current.getContext('2d');
+    return new Chart(ctx, {
+      type: 'bar',
+      data: chartData,
+      options: options,
+    });
   };
+
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.destroy();
+      }
+    };
+  }, []);
 
   return (
     <div>
-      <h1>Charts</h1>
+      <h1>Bar Chart</h1>
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
-      {/* Render your charts here using barChartData and pieChartData */}
+      <canvas ref={chartContainer} />
     </div>
   );
 };
