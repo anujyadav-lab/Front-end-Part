@@ -17,6 +17,8 @@ const App = () => {
       <Statistics month = {month}/>
       <Charts month = {month}/>
       <CombinedData month = {month} />
+      {/* <PieChart month={month}/> */}
+
     </div>
   );
 };

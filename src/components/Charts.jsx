@@ -1,19 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Chart, BarController, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
+import { Chart, BarController, BarElement, CategoryScale, LinearScale, PieController, ArcElement, Title, Tooltip, Legend } from 'chart.js';
 
 // Register Chart.js components
-Chart.register(BarController, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
+Chart.register(BarController, BarElement, CategoryScale, LinearScale, PieController, ArcElement, Title, Tooltip, Legend);
 
 const Charts = ({ month }) => {
   const [barChartData, setBarChartData] = useState([]);
+  const [pieChartData, setPieChartData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const chartContainer = useRef(null);
-  const chartInstanceRef = useRef(null);
+
+  const barChartContainer = useRef(null);
+  const pieChartContainer = useRef(null);
+  const barChartInstanceRef = useRef(null);
+  const pieChartInstanceRef = useRef(null);
 
   useEffect(() => {
     fetchBarChartData();
+    fetchPieChartData();
   }, [month]);
 
   const fetchBarChartData = async () => {
@@ -29,17 +34,40 @@ const Charts = ({ month }) => {
     }
   };
 
-  useEffect(() => {
-    if (chartContainer.current) {
-      if (chartInstanceRef.current) {
-        chartInstanceRef.current.destroy();
-      }
-      const newChartInstance = renderChart();
-      chartInstanceRef.current = newChartInstance;
+  const fetchPieChartData = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`http://localhost:5000/api/pie-chart?month=${month}`);
+      setPieChartData(response.data);
+    } catch (error) {
+      console.error('Error fetching pie chart data:', error);
+      setError('Error fetching pie chart data');
+    } finally {
+      setLoading(false);
     }
-  }, [barChartData]);
+  };
 
-  const renderChart = () => {
+  useEffect(() => {
+    if (barChartContainer.current) {
+      if (barChartInstanceRef.current) {
+        barChartInstanceRef.current.destroy();
+      }
+      const newBarChartInstance = renderBarChart();
+      barChartInstanceRef.current = newBarChartInstance;
+    }
+  }, [barChartData,pieChartData]);
+
+  useEffect(() => {
+    if (pieChartContainer.current) {
+      if (pieChartInstanceRef.current) {
+        pieChartInstanceRef.current.destroy();
+      }
+      const newPieChartInstance = renderPieChart();
+      pieChartInstanceRef.current = newPieChartInstance;
+    }
+  }, [pieChartData]);
+
+  const renderBarChart = () => {
     const labels = barChartData.map(item => item.priceRange);
     const data = barChartData.map(item => item.count);
 
@@ -70,9 +98,64 @@ const Charts = ({ month }) => {
       },
     };
 
-    const ctx = chartContainer.current.getContext('2d');
+    const ctx = barChartContainer.current.getContext('2d');
     return new Chart(ctx, {
       type: 'bar',
+      data: chartData,
+      options: options,
+    });
+  };
+
+  const renderPieChart = () => {
+    const labels = pieChartData.map(item => item._id);
+    const data = pieChartData.map(item => item.count);
+
+    const chartData = {
+      labels: labels,
+      datasets: [
+        {
+          data: data,
+          backgroundColor: [
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+            '#4BC0C0',
+            '#9966FF',
+            '#FF9F40'
+          ],
+          hoverBackgroundColor: [
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+            '#4BC0C0',
+            '#9966FF',
+            '#FF9F40'
+          ]
+        }
+      ]
+    };
+
+    const options = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const label = context.label || '';
+              const value = context.raw || '';
+              return `${label}: ${value}`;
+            }
+          }
+        }
+      }
+    };
+
+    const ctx = pieChartContainer.current.getContext('2d');
+    return new Chart(ctx, {
+      type: 'pie',
       data: chartData,
       options: options,
     });
@@ -81,8 +164,11 @@ const Charts = ({ month }) => {
   // Clean up on unmount
   useEffect(() => {
     return () => {
-      if (chartInstanceRef.current) {
-        chartInstanceRef.current.destroy();
+      if (barChartInstanceRef.current) {
+        barChartInstanceRef.current.destroy();
+      }
+      if (pieChartInstanceRef.current) {
+        pieChartInstanceRef.current.destroy();
       }
     };
   }, []);
@@ -92,7 +178,12 @@ const Charts = ({ month }) => {
       <h1>Bar Chart</h1>
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
-      <canvas ref={chartContainer} />
+      <canvas ref={barChartContainer} />
+
+      <h1>Pie Chart</h1>
+      {loading && <p>Loading...</p>}
+      {error && <p>{error}</p>}
+      <canvas ref={pieChartContainer} />
     </div>
   );
 };
