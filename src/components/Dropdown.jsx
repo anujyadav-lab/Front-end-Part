@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react';
-
+// 
 const Dropdown = ({month,setMonth}) => {
     
      // Default to March (key: 3)
@@ -25,17 +25,22 @@ const Dropdown = ({month,setMonth}) => {
       };
 
   return (
-    <div>
-    <label>
-      Select Month:
-      <select value={month} onChange={handleMonthChange}>
-        {Object.entries(months).map(([key, monthName]) => (
-          <option key={key} value={key}>
-            {monthName}
-          </option>
-        ))}
-      </select>
-    </label>
+    <div className='flex justify-center '>
+    <label className="block">
+  SELECT MONTH:
+  <select
+    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+    value={month}
+    onChange={handleMonthChange}
+  >
+    {Object.entries(months).map(([key, monthName]) => (
+      <option key={key} value={key}>
+        {monthName}
+      </option>
+    ))}
+  </select>
+</label>
+
   </div>
   )
 }

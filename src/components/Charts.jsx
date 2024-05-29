@@ -174,17 +174,24 @@ const Charts = ({ month }) => {
   }, []);
 
   return (
-    <div>
-      <h1>Bar Chart</h1>
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
-      <canvas ref={barChartContainer} />
-
-      <h1>Pie Chart</h1>
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
-      <canvas ref={pieChartContainer} />
+    <div className="flex justify-center bg-orange-200 w-full p-8">
+  <div className="max-w-lg mx-auto bg-white rounded-lg shadow-md p-8">
+    <h1 className="text-2xl font-bold mb-4">Bar Chart</h1>
+    {loading && <p className="text-center">Loading...</p>}
+    {error && <p className="text-center text-red-500">{error}</p>}
+    <div className="mb-8">
+      <canvas ref={barChartContainer} className="w-full" />
     </div>
+
+    <h1 className="text-2xl font-bold mb-4">Pie Chart</h1>
+    {loading && <p className="text-center">Loading...</p>}
+    {error && <p className="text-center text-red-500">{error}</p>}
+    <div>
+      <canvas ref={pieChartContainer} className="w-full" />
+    </div>
+  </div>
+</div>
+
   );
 };
 

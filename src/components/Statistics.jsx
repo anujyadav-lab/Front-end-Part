@@ -30,19 +30,21 @@ const Statistics = ({month}) => {
   
 
   return (
-    <div>
-      <h1>Statistics</h1>
-     
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
-      {statistics && (
-        <div>
-          <p>Total Sale Amount: {statistics.totalSaleAmount}</p>
-          <p>Total Sold Items: {statistics.totalSoldItems}</p>
-          <p>Total Not Sold Items: {statistics.totalNotSoldItems}</p>
-        </div>
-      )}
-    </div>
+    <div className="flex justify-center bg-orange-200 w-full p-8">
+  <div className="max-w-md mx-auto bg-white rounded-lg shadow-md p-8">
+    <h1 className="text-2xl font-bold mb-4">Statistics</h1>
+    {loading && <p className="text-center">Loading...</p>}
+    {error && <p className="text-center text-red-500">{error}</p>}
+    {statistics && (
+      <div>
+        <p className="mb-4">Total Sale Amount: ${statistics.totalSaleAmount}</p>
+        <p className="mb-4">Total Sold Items: {statistics.totalSoldItems}</p>
+        <p>Total Not Sold Items: {statistics.totalNotSoldItems}</p>
+      </div>
+    )}
+  </div>
+</div>
+
   );
 };
 
